@@ -26,7 +26,7 @@ app.use((req, res, next) => {
   return next();
 });
 
-app.get('/', function (req, res) {
+app.get('/api', function (req, res) {
   res.send('Yugioh carder artwork proxy');
 });
 
