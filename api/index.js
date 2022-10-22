@@ -4,6 +4,9 @@ const cors = require('cors');
 const app = express();
 
 const allowOrigins = ['http://localhost:3000', 'https://yugioh-carder.vercel.app'];
+if (process.env.NODE_ENV === "production") {
+  allowOrigins.shift();
+}
 const corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (allowOrigins.indexOf(req.header('Origin')) !== -1) {
