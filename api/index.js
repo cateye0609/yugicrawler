@@ -42,7 +42,7 @@ app.get('/api/artwork/:name', cors(corsOptionsDelegate), async (req, res) => {
     });
     response.data.pipe(res);
     const currentDate =  new Date().toLocaleString();
-    console.log(`${currentDate} | ${name}`);
+    console.log(`[${req.method}] /api/artwork/${name} | ${currentDate}`);
   } catch (error) {
     console.log(error.message);
     res.status(500).send(error.message);
