@@ -66,7 +66,9 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
       }
       const $ = cheerio.load(html);
 
-      const cardSetHtml = $("table#cts--EN.cts").find("tbody > tr").toArray();
+      const cardSetHtml = $("#English_sets").hasClass("table#cts--EN.cts")
+        ? $("table#cts--EN.cts").find("tbody > tr").toArray()
+        : $("table#cts--JP.cts").find("tbody > tr").toArray();
       const cardSet = cardSetHtml.slice(1).map(e => $(e).find("td").toArray());
       const cardSetData = cardSet.map(e => e.map(e2 => $(e2).text().trim()));
 
