@@ -74,6 +74,9 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
 
       const types = $("table.innertable > tbody > tr:nth-child(3) > td").text();
       const isPendulum = types.toLowerCase().includes("pendulum");
+      const extraDeckTypes = ['fusion', 'synchro', 'xyz', 'link'];
+      const isExtraMonster = extraDeckTypes.findIndex(e => types.toLowerCase().includes(e)) > -1;
+
       const effect = isPendulum
         ? $('.lore dd').toArray().map(e => $(e).find("br").replaceWith("\n").end().text().trim())
         : $(".lore").find("p").find("br").replaceWith("\n").end().text().trim().split("\n");
@@ -86,9 +89,12 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
         }
       } else {
         effectResult = {
-          monsterEffect: effect.length > 1 ? `[${effect[0]}]\n${effect[1]}` : effect[0]
+          monsterEffect: effect.length > 1
+            ? (isExtraMonster ? `[${effect[0]}]\n${effect[1]}` : effect.join("\n"))
+            : effect[0]
         };
       }
+
       const result = {
         effect: effectResult.monsterEffect,
         pendulumEffect: effectResult.pendulumEffect,
