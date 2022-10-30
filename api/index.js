@@ -1,10 +1,14 @@
-const express = require('express');
-const axios = require('axios');
-const cheerio = require('cheerio');
-const request = require('request-promise');
-const cors = require('cors');
+import axios from 'axios';
+import { load } from 'cheerio';
+import cors from 'cors';
+import express from 'express';
+import request from 'request-promise';
+import { CARD_TYPE, MONSTER_PROPERTY, ST_PROPERTY } from './constant.js';
+import { getMonsterType } from './utils.js';
+
 const app = express();
 
+/* use cors */
 const allowOrigins = ['http://localhost:3000', 'https://yugioh-carder.vercel.app'];
 const corsOptionsDelegate = function (req, callback) {
   var corsOptions;
@@ -15,7 +19,6 @@ const corsOptionsDelegate = function (req, callback) {
   }
   callback(null, corsOptions); // callback expects two parameters: error and options
 }
-
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (allowOrigins.includes(origin)) {
@@ -24,11 +27,11 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
   return next();
 });
-
+/* root */
 app.get('/api', function (req, res) {
   res.send('Yugioh carder artwork proxy');
 });
-
+/* get card artwork */
 app.get('/api/artwork/:name', cors(corsOptionsDelegate), async (req, res) => {
   const { name } = req.params;
   const currentDate = new Date().toLocaleString();
@@ -50,7 +53,7 @@ app.get('/api/artwork/:name', cors(corsOptionsDelegate), async (req, res) => {
     res.status(500).send(error.message);
   }
 });
-
+// get card data by name
 app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
   const { name } = req.params;
   const currentDate = new Date().toLocaleString();
@@ -64,7 +67,61 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
       if (response.statusCode !== 200) {
         console.error("Can't get page: ", response.statusMessage);
       }
-      const $ = cheerio.load(html);
+      const $ = load(html);
+
+      const infoHtml = $(".infocolumn table.innertable tbody");
+      const cardType = infoHtml.find("tr:contains('Card type') > td").text().trim();
+      let cardProperty = { cardType };
+      if (cardType === CARD_TYPE.monster) {
+        const monsterTypes = infoHtml.find(`tr:contains('Types') > td`).text().trim();
+        const type = getMonsterType(monsterTypes);
+        let propsList = [];
+        switch (type) {
+          case "xyz":
+            propsList = MONSTER_PROPERTY.xyz;
+            break;
+          case "pendulum":
+            propsList = MONSTER_PROPERTY.pendulum;
+            break
+          case "link":
+            propsList = MONSTER_PROPERTY.link;
+            break;
+          default:
+            propsList = MONSTER_PROPERTY.monster;
+            break;
+        }
+
+        if (type === "link") {
+          const atkLink = infoHtml.find(`tr:contains('ATK / LINK') > td`).text().trim().split("/");
+          cardProperty = {
+            ...cardProperty,
+            atk: atkLink[0].trim(),
+            linkRating: atkLink[1].trim(),
+          }
+        } else {
+          const atkDef = infoHtml.find(`tr:contains('ATK / DEF') > td`).text().trim().split("/");
+          cardProperty = {
+            ...cardProperty,
+            atk: atkDef[0].trim(),
+            def: atkDef[1].trim(),
+          }
+        }
+
+        propsList.forEach(prop => {
+          cardProperty = {
+            ...cardProperty,
+            monsterTypes,
+            [prop.toLowerCase().replace(/ /g, "_")]: infoHtml.find(`tr:contains('${prop}') > td`).text().trim()
+          }
+        });
+      } else {
+        ST_PROPERTY.forEach(prop => {
+          cardProperty = {
+            ...cardProperty,
+            [prop.toLowerCase()]: infoHtml.find(`tr:contains('${prop}') > td`).text().trim()
+          }
+        });
+      }
 
       const cardSetHtml = $("table#cts--EN.cts").length
         ? $("table#cts--EN.cts").find("tbody > tr").toArray()
@@ -96,6 +153,7 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
       }
 
       const result = {
+        ...cardProperty,
         effect: effectResult.monsterEffect,
         pendulumEffect: effectResult.pendulumEffect,
         cardSet: cardSetData.map(item => {
@@ -128,4 +186,4 @@ const server = app.listen(PORT, function () {
   const port = server.address().port;
 
   console.log("Yugioh-carder server is running at: http://%s:%s", host, port)
-})
+});
