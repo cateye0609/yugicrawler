@@ -17,7 +17,6 @@ export const MONSTER_PROPERTY = {
 	],
 	link: [
 		"Attribute",
-		"Link Arrows",
 		"Password",
 	]
 };

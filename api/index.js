@@ -93,10 +93,12 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
 
         if (type === "link") {
           const atkLink = infoHtml.find(`tr:contains('ATK / LINK') > td`).text().trim().split("/");
+          const linkArrows = infoHtml.find(`tr:contains('Link Arrows') > td`).text().trim().split(",").map(e => e.trim());
           cardProperty = {
             ...cardProperty,
             atk: atkLink[0].trim(),
             linkRating: atkLink[1].trim(),
+            linkArrows
           }
         } else {
           const atkDef = infoHtml.find(`tr:contains('ATK / DEF') > td`).text().trim().split("/");
