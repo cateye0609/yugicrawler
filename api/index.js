@@ -69,9 +69,11 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
       }
       const $ = load(html);
 
+      const name = $(".card-table > .heading").text().trim();
+
       const infoHtml = $(".infocolumn table.innertable tbody");
       const cardType = infoHtml.find("tr:contains('Card type') > td").text().trim();
-      let cardProperty = { cardType };
+      let cardProperty = { name, cardType };
       if (cardType === CARD_TYPE.monster) {
         const monsterTypes = infoHtml.find(`tr:contains('Types') > td`).text().trim();
         const type = getMonsterType(monsterTypes);
