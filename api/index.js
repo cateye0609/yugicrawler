@@ -140,22 +140,21 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
 
       const effect = isPendulum
         ? $('.lore dd').toArray().map(e => $(e).find("br").replaceWith("\n").end().text().trim())
-        : $(".lore > p").find("br").replaceWith("\n").end().text().trim().split("/(?<=^\n+)\s/");
+        : $(".lore > p").find("br").replaceWith("\n").end().text().trim().split("\n");
       let effectResult = null;
       if (isPendulum) {
-        const monsterEff = effect[1].split("/(?<=^\n+)\s/");
+        const monsterEff = effect[1].split("\n");
         effectResult = {
-          monsterEffect: monsterEff.length > 1 ? `[${monsterEff[0]}]\n${monsterEff[1]}` : monsterEff[0],
+          monsterEffect: monsterEff.length > 1 ? `[${monsterEff[0]}]\n${monsterEff.slice(1).join("\n")}` : monsterEff[0],
           pendulumEffect: effect[0]
         }
       } else {
         effectResult = {
           monsterEffect: effect.length > 1
-            ? (isExtraMonster ? `[${effect[0]}]\n${effect[1]}` : effect.join("\n"))
+            ? (isExtraMonster ? `[${effect[0]}]\n${effect.slice(1).join("\n")}` : effect.join("\n"))
             : effect[0]
         };
       }
-      console.log(effectResult);
 
       const result = {
         ...cardProperty,
