@@ -3,6 +3,7 @@ export const MONSTER_PROPERTY = {
 		"Attribute",
 		"Level",
 		"Password",
+		"Limitation text",
 	],
 	xyz: [
 		"Attribute",

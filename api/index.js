@@ -115,7 +115,7 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
           cardProperty = {
             ...cardProperty,
             monsterTypes,
-            [prop.toLowerCase().replace(/ /g, "_")]: infoHtml.find(`tr:contains('${prop}') > td`).text().trim()
+            [prop.toLowerCase().replace(/ /g, "_")]: infoHtml.find(`tr:contains('${prop}') > td`).first().text().trim()
           }
         });
       } else {
@@ -168,6 +168,7 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
             rarity: item[3],
           }
         }),
+        password: cardProperty.password === 'None' ? null : cardProperty.password
       }
 
       if (response) {
