@@ -169,7 +169,7 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
           }
         }),
         password: cardProperty.password === 'None' ? null : cardProperty.password,
-        isToken: cardProperty.password === 'None' && cardProperty.limitation_text
+        isToken: cardProperty.password === 'None' && !!cardProperty.limitation_text
       }
 
       if (response) {
