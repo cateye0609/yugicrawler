@@ -143,7 +143,9 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
         if (isPendulum) {
           const monsterEff = effect[1].split("\n");
           effectResult = {
-            monsterEffect: monsterEff.length > 1 ? `[${monsterEff[0]}]\n${monsterEff.slice(1).join("\n")}` : monsterEff[0],
+            monsterEffect: monsterEff.length > 1
+              ? (isExtraMonster ? `[${monsterEff[0]}]\n${monsterEff.slice(1).join("\n")}` : monsterEff.join("\n"))
+              : monsterEff[0],
             pendulumEffect: effect[0]
           }
         } else {
