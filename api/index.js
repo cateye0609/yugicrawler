@@ -74,8 +74,9 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
         const cardType = infoHtml.find("tr:contains('Card type') > td").text().trim();
         let cardProperty = { name, cardType };
         if (cardType === CARD_TYPE.monster) {
-          const monsterTypes = infoHtml.find(`tr:contains('Types') > td`).text().trim();
+          const monsterTypes = infoHtml.find(`tr:contains('Types') > td`).first().text().trim();
           const type = getMonsterType(monsterTypes);
+          console.log(monsterTypes);
           let propsList = [];
           switch (type) {
             case "xyz":
