@@ -53,7 +53,8 @@ app.get('/api/artwork/:name', cors(corsOptionsDelegate), async (req, res) => {
     res.status(500).send(error.message);
   }
 });
-// get card data by name
+
+// get card data by name or passcode or set code
 app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
   const { name } = req.params;
   const currentDate = new Date().toLocaleString();
@@ -169,6 +170,7 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
             }
           }),
           password: cardProperty.password === 'None' ? null : cardProperty.password,
+          artwork: cardProperty.password === 'None' ? null : `${req.get('host')}/api/artwork/${Number(cardProperty.password)}`,
           isToken: cardProperty.password === 'None' && !!cardProperty.limitation_text
         }
 
@@ -189,11 +191,72 @@ app.get('/api/data/:name', cors(corsOptionsDelegate), async (req, res) => {
   }
 });
 
+// get set data by name or id
+app.get('/api/set/:name', cors(corsOptionsDelegate), async (req, res) => {
+  const { name } = req.params;
+  const print = req.query.print;
+  const currentDate = new Date().toLocaleString();
+  console.log(`[${req.method}] /api/data/${name} | ${currentDate}`);
+  if (!name) {
+    return res.status(400).send();
+  }
+  const url = `https://yugipedia.com/wiki/${(name.length < 6 ? name.toUpperCase() : name).replace(" ", "_")}`;
+  try {
+    request(url, (error, response, html) => {
+      if (response && response.statusCode === 200) {
+        const $ = load(html);
+
+        const isJap = $(".set-list:last-child > table.set-list__main > tbody > tr").first().text().includes("Japanese name");
+        let result = [];
+        if (isJap) {
+          const setList = $(".set-list").toArray().map(e => $(e).find("table.set-list__main > tbody > tr").toArray().slice(1).map(e => $(e).children().toArray()));
+          result = setList.reduce((acc, val) => acc.concat(val.map(e => {
+            return {
+              code: $(e[0]).text(),
+              name: $(e[1]).text().slice(1, -1),
+              category: $(e[4]).text(),
+              rarity: $(e[3]).find("br").replaceWith(", ").end().text(),
+              print: $(e[5]).text(),
+            };
+          })), []);
+        } else {
+          const setList = $(".set-list:last-child > table.set-list__main > tbody > tr").toArray().slice(1).map(e => $(e).children().toArray());
+          result = setList.map(e => {
+            return {
+              code: $(e[0]).text(),
+              name: $(e[1]).text().slice(1, -1),
+              category: $(e[3]).text(),
+              rarity: $(e[2]).find("br").replaceWith(", ").end().text(),
+              print: $(e[4]).text(),
+            };
+          });
+        }
+        if (result) {
+          if (print) {
+            res.status(200).json(result.filter(e => e.print.toLowerCase() === print.toLowerCase()));
+          } else {
+            res.status(200).json(result);
+          }
+        } else {
+          console.error("Can't get data", error);
+          res.status(404).send(error.message);
+        }
+      } else {
+        console.error("Can't get page: ", response.statusMessage);
+        res.status(500).send('Cannot get data from Yugipedia.');
+      }
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send(error.message);
+  }
+});
+
 const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, function () {
 
   const host = server.address().address;
   const port = server.address().port;
 
-  console.log("Yugioh-carder server is running at: http://%s:%s", host, port)
+  console.log("Yugioh-carder server is running at: http://%s:%s", host, port);
 });
