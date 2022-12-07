@@ -173,6 +173,7 @@ export const getSetInfo = async (req, res) => {
             if (response && response.statusCode === 200) {
                 const $ = load(html);
 
+                const setName = $("h1#firstHeading > i").text();
                 const isJap = $(".set-list:last-child > table.set-list__main > tbody > tr").first().text().includes("Japanese name");
                 let result = [];
                 if (isJap) {
@@ -199,10 +200,19 @@ export const getSetInfo = async (req, res) => {
                     });
                 }
                 if (result) {
+                    const setInfo = {
+                        setName
+                    };
                     if (print) {
-                        res.status(200).json(result.filter(e => e.print.toLowerCase() === print.toLowerCase()));
+                        res.status(200).json({
+                            ...setInfo,
+                            list: result.filter(e => e.print.toLowerCase() === print.toLowerCase())
+                        });
                     } else {
-                        res.status(200).json(result);
+                        res.status(200).json({
+                            ...setInfo,
+                            list: result
+                        });
                     }
                 } else {
                     console.error("Can't get data", error);
