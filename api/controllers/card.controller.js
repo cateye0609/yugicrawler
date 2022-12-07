@@ -173,7 +173,13 @@ export const getSetInfo = async (req, res) => {
             if (response && response.statusCode === 200) {
                 const $ = load(html);
 
+                const getSetInformationItem = (name) => $(`.infobox-yugipedia th.infobox-label:contains('${name}') + td.infobox-data`).text().trim();
+                const format = getSetInformationItem('Medium');
+                const type = getSetInformationItem('Type');
                 const setName = $("h1#firstHeading > i").text();
+                const setCode = $(".infobox-yugipedia th.infobox-label:contains('Prefix') + td.infobox-data").text().split("-")[0].trim();
+                const releasedDate = $(".infobox-yugipedia tr:contains('Release dates') + tr > td.infobox-data").text().trim();
+                const coverImage = $(".infobox-image > a > img").attr('src');
                 const isJap = $(".set-list:last-child > table.set-list__main > tbody > tr").first().text().includes("Japanese name");
                 let result = [];
                 if (isJap) {
@@ -201,7 +207,12 @@ export const getSetInfo = async (req, res) => {
                 }
                 if (result) {
                     const setInfo = {
-                        setName
+                        setName,
+                        setCode,
+                        coverImage,
+                        format,
+                        type,
+                        releasedDate
                     };
                     if (print) {
                         res.status(200).json({
