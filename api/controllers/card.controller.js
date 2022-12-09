@@ -135,7 +135,7 @@ export const getCardInfo = async (req, res) => {
                         return {
                             releasedDate: item[0],
                             code: item[1],
-                            name: item[isJap ? 3 : 2],
+                            name: item[2],
                             rarity: item[isJap ? 4 : 3],
                         }
                     }),
