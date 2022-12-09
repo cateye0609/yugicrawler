@@ -98,6 +98,7 @@ export const getCardInfo = async (req, res) => {
                 const cardSetHtml = $("table#cts--EN.cts").length
                     ? $("table#cts--EN.cts").find("tbody > tr").toArray()
                     : $("table#cts--JP.cts").find("tbody > tr").toArray();
+                const isJap = !$("table#cts--EN.cts").length && $("table#cts--JP.cts").find("tbody > tr").length;
                 const cardSet = cardSetHtml.slice(1).map(e => $(e).find("td").toArray());
                 const cardSetData = cardSet.map(e => e.map(e2 => $(e2).text().trim()));
 
@@ -134,8 +135,8 @@ export const getCardInfo = async (req, res) => {
                         return {
                             releasedDate: item[0],
                             code: item[1],
-                            name: item[2],
-                            rarity: item[3],
+                            name: item[isJap ? 3 : 2],
+                            rarity: item[isJap ? 4 : 3],
                         }
                     }),
                     password: cardProperty.password === 'None' ? null : cardProperty.password,
