@@ -100,7 +100,7 @@ export const getCardInfo = async (req, res) => {
                     : $("table#cts--JP.cts").find("tbody > tr").toArray();
                 const isJap = !$("table#cts--EN.cts").length && $("table#cts--JP.cts").find("tbody > tr").length;
                 const cardSet = cardSetHtml.slice(1).map(e => $(e).find("td").toArray());
-                const cardSetData = cardSet.map(e => e.map(e2 => $(e2).text().trim()));
+                const cardSetData = cardSet.map(e => e.map(e2 => $(e2).find("br").replaceWith(", ").end().text().trim()));
 
                 const types = $("table.innertable > tbody > tr:nth-child(3) > td").text();
                 const isPendulum = types.toLowerCase().includes("pendulum");
