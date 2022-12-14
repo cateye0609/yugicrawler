@@ -7,7 +7,6 @@ const errorHandler = (err, _req, res, _next) => {
     if (environment === 'development') {
         console.error(err.stack);
     }
-    res.statusMessage = errMsg;
     res.status(errStatus).json({
         status: errStatus,
         message: errMsg,
