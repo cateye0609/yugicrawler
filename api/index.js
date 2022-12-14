@@ -1,10 +1,13 @@
 import cors from 'cors';
 import express from 'express';
 import { addOrigin, corsOptionsDelegate } from './middlewares/cors.js';
-import { logger } from './middlewares/logger.js';
-import { router } from './routes/card.route.js';
+import errorHandler from './middlewares/error.js';
+import logger from './middlewares/logger.js';
+import router from './routes/card.route.js';
 
 const app = express();
+/* json parser */
+app.use(express.json());
 /* cors */
 app.use(
   addOrigin,
@@ -14,6 +17,8 @@ app.use(
 app.use(logger);
 /* route */
 app.use('/api', router);
+/* error handler */
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, () => {
