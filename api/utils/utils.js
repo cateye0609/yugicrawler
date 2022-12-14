@@ -2,6 +2,8 @@ import { load } from 'cheerio';
 import request from 'request-promise-native';
 import { CARD_TYPE, MONSTER_PROPERTY, ST_PROPERTY } from '../constants/constant.js';
 
+export const environment = process.env.NODE_ENV || 'development';
+
 export function getMonsterType(types) {
 	const monsterType = ['normal', 'fusion', 'synchro', 'xyz', 'link', 'ritual', 'pendulum'];
 	return monsterType.find(e => types.toLowerCase().includes(e));

@@ -3,7 +3,7 @@ import { load } from 'cheerio';
 import request from 'request-promise-native';
 import { CARD_TYPE, MONSTER_PROPERTY, ST_PROPERTY } from '../constants/constant.js';
 import ApiError from '../utils/apiError.js';
-import { getMonsterType } from '../utils/utils.js';
+import { environment, getMonsterType } from '../utils/utils.js';
 import statusMsg from '../constants/message.js';
 /* get card artwork by passcode */
 export const getArtwork = async (req, res, next) => {
@@ -132,7 +132,7 @@ export const getCardInfo = (req, res, next) => {
                     }
                 }),
                 password: cardProperty.password === 'None' ? null : cardProperty.password,
-                artwork: cardProperty.password === 'None' ? null : `${req.protocol}://${req.get('host')}/api/artwork/${Number(cardProperty.password)}`,
+                artwork: cardProperty.password === 'None' ? null : `${environment === 'development' ? 'http' : 'https'}://${req.get('host')}/api/artwork/${Number(cardProperty.password)}`,
                 isToken: cardProperty.password === 'None' && !!cardProperty.limitation_text
             }
 
