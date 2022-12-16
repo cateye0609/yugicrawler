@@ -1,7 +1,7 @@
 const statusMsg = {
 	default: "Something went wrong.",
 	wrongFormat: "Wrong format.",
-	notFound: "Not found."
+	notFound: "No data found."
 }
 
 export default statusMsg;
