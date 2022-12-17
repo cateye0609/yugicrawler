@@ -1,4 +1,4 @@
-const allowOrigins = ['http://localhost:3000', 'https://localhost:3000', 'https://yugioh-carder.vercel.app'];
+const allowOrigins = ['http://localhost:3000', 'https://localhost:3000', 'https://yugimaker.vercel.app'];
 export const corsOptionsDelegate = (req, callback) => {
     var corsOptions;
     if (allowOrigins.indexOf(req.header('Origin')) !== -1) {
