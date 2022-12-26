@@ -24,5 +24,5 @@ const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, () => {
   const host = server.address().address;
   const port = server.address().port;
-  console.log("Yugimaker server is running at: http://%s:%s", host, port);
+  console.log("Yugicrawler is running at: http://%s:%s", host, port);
 });
