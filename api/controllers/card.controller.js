@@ -171,7 +171,7 @@ export const getSetInfo = (req, res, next) => {
                         name: $(e[1]).text().slice(1, -1),
                         category: $(e[4]).text(),
                         rarity: $(e[3]).find("br").replaceWith(", ").end().text(),
-                        print: $(e[5]).text(),
+                        print: $(e[5]).text() || "New",
                     };
                 })), []);
             } else {
