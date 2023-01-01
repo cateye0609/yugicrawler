@@ -54,6 +54,10 @@ export const getCardInfo = (req, res, next) => {
                         break;
                 }
 
+                if (type !== "pendulum" && monsterTypes.toLowerCase().includes("pendulum")) {
+                    propsList = [...new Set([...propsList, ...MONSTER_PROPERTY.pendulum])];
+                }
+
                 if (type === "link") {
                     const atkLink = infoHtml.find(`tr:contains('ATK / LINK') > td`).text().trim().split("/");
                     const linkArrows = infoHtml.find(`tr:contains('Link Arrows') > td`).text().trim().split(",").map(e => e.trim());
