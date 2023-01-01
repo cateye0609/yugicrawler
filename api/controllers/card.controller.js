@@ -36,6 +36,7 @@ export const getCardInfo = (req, res, next) => {
             let cardProperty = { name, cardType };
             if (cardType === CARD_TYPE.monster) {
                 const monsterTypes = infoHtml.find(`tr:contains('Types') > td`).first().text().trim();
+                const isToken = monsterTypes.includes("Token");
                 const type = getMonsterType(monsterTypes);
                 let propsList = [];
                 switch (type) {
@@ -75,7 +76,8 @@ export const getCardInfo = (req, res, next) => {
                     cardProperty = {
                         ...cardProperty,
                         monsterTypes,
-                        [prop.toLowerCase().replace(/ /g, "_")]: infoHtml.find(`tr:contains('${prop}') > td`).first().text().trim()
+                        [prop.toLowerCase().replace(/ /g, "_")]: infoHtml.find(`tr:contains('${prop}') > td`).first().text().trim(),
+                        isToken
                     }
                 });
             } else {
@@ -133,7 +135,7 @@ export const getCardInfo = (req, res, next) => {
                 }),
                 password: cardProperty.password === 'None' ? null : cardProperty.password,
                 artwork: cardProperty.password === 'None' ? null : `${environment === 'development' ? 'http' : 'https'}://${req.get('host')}/api/artwork/${Number(cardProperty.password)}`,
-                isToken: cardProperty.password === 'None' && !!cardProperty.limitation_text
+                isToken: (cardProperty.password === 'None' && !!cardProperty.limitation_text) || cardProperty.isToken
             }
 
             if (result) {
