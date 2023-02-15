@@ -13,11 +13,13 @@
 ## Get card artwork
 
 Get card artwork by passcode
+<br/>
 `GET /api/artwork/:passcode`
 
 ## Get card info
 
 Get card data by name, passcode or set code
+<br/>
 `GET /api/card/:passcode`
 
 **Response**
@@ -48,13 +50,14 @@ Get card data by name, passcode or set code
 ## Get set info
 
 Get set data by name or code
+<br/>
 `GET /api/set/:name`
 
 **Parameters**
 
 |          Name | Required |  Type   | Description                                                                                                                                                           |
 | -------------:|:--------:|:-------:| --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|     `print` | optional | string  | Get cards by specific print. <br/> Supported values: `new`.                                                                                                   |
+|     `print` | optional | string  | Get cards by specific print. <br/> Supported values: `new`                                                                                                   |
 
 **Response**
 
