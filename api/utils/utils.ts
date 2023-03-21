@@ -1,17 +1,18 @@
 import { load } from 'cheerio';
+import { Request } from 'express';
 import request from 'request-promise-native';
-import { CARD_TYPE, MONSTER_PROPERTY, ST_PROPERTY } from '../constants/constant.js';
+import { CARD_TYPE, MONSTER_PROPERTY, ST_PROPERTY } from '../constants/constant';
 
 export const environment = process.env.NODE_ENV || 'development';
 
-export function getMonsterType(types) {
+export function getMonsterType(types: string) {
 	const monsterType = ['normal', 'fusion', 'synchro', 'xyz', 'link', 'ritual', 'pendulum'];
 	return monsterType.find(e => types.toLowerCase().includes(e));
 }
 
-export async function crawlCard(cardName, req) {
+export async function crawlCard(cardName: string | number, req: Request) {
 	try {
-		const url = `https://yugipedia.com/wiki/${isNaN(cardName) ? cardName.replace(" ", "_") : cardName}`;
+		const url = `https://yugipedia.com/wiki/${typeof cardName === "string" ? cardName.replace(" ", "_") : cardName}`;
 		const response = await request(url);
 		const $ = load(response);
 

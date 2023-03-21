@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
-import * as cardController from '../controllers/card.controller.js';
-import * as cardsController from '../controllers/cards.controller.js';
+import * as cardController from '../controllers/card.controller';
+import * as cardsController from '../controllers/cards.controller';
 
 const upload = multer({ dest: '/tmp/' })
 const router = express.Router();

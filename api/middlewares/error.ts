@@ -1,7 +1,8 @@
-import statusMsg from "../constants/message.js";
-import { environment } from "../utils/utils.js";
+import { NextFunction, Response } from "express";
+import statusMsg from "../constants/message";
+import { environment } from "../utils/utils";
 
-const errorHandler = (err, _req, res, _next) => {
+const errorHandler = (err: any, _req: Request, res: Response, _next: NextFunction) => {
     const errStatus = err.statusCode || 500;
     const errMsg = err.message || statusMsg.default;
     if (environment === 'development') {

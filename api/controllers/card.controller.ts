@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { load } from 'cheerio';
 import request from 'request-promise-native';
-import { CARD_TYPE, MONSTER_PROPERTY, ST_PROPERTY } from '../constants/constant.js';
-import ApiError from '../utils/apiError.js';
-import { environment, getMonsterType } from '../utils/utils.js';
-import statusMsg from '../constants/message.js';
+import { CARD_TYPE, MONSTER_PROPERTY, ST_PROPERTY } from '../constants/constant';
+import statusMsg from '../constants/message';
+import ApiError from '../utils/apiError';
+import { environment, getMonsterType } from '../utils/utils';
 /* get card artwork by passcode */
 export const getArtwork = async (req, res, next) => {
     const { passcode } = req.params;

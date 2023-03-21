@@ -1,10 +1,11 @@
+import { NextFunction, Request, Response } from 'express';
 import * as fs from 'fs';
 import * as ydke from "ydke";
-import statusMsg from "../constants/message.js";
-import ApiError from "../utils/apiError.js";
-import { crawlCard } from "../utils/utils.js";
+import statusMsg from "../constants/message";
+import ApiError from "../utils/apiError";
+import { crawlCard } from "../utils/utils";
 
-export const getMutipleCards = async (req, res, next) => {
+export const getMutipleCards = async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.list && req.body.list.length) {
         const list = [...new Set(req.body.list)];
         try {
@@ -22,7 +23,7 @@ export const getMutipleCards = async (req, res, next) => {
             try {
                 const result = await Promise.all(list.map(item => crawlCard(item, req)));
                 res.status(200).json(result.filter(item => !!item));
-                fs.unlink(path, () => { console.log(`Deleted file ${req.file.filename}`); });
+                fs.unlink(path, () => { console.log(`Deleted file ${req.file?.filename}`); });
             } catch (error) {
                 next(error);
             }

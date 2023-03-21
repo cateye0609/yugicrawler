@@ -1,9 +1,10 @@
 import cors from 'cors';
 import express from 'express';
-import { addOrigin, corsOptionsDelegate } from './middlewares/cors.js';
-import errorHandler from './middlewares/error.js';
-import logger from './middlewares/logger.js';
-import router from './routes/card.route.js';
+import { AddressInfo } from 'net';
+import { addOrigin, corsOptionsDelegate } from './middlewares/cors';
+import errorHandler from './middlewares/error';
+import logger from './middlewares/logger';
+import router from './routes/card.route';
 
 const app = express();
 /* json parser */
@@ -22,7 +23,8 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, () => {
-  const host = server.address().address;
-  const port = server.address().port;
+  const serverAddress = server.address() as AddressInfo;
+  const host = serverAddress.address;
+  const port = serverAddress.port;
   console.log("Yugicrawler is running at: http://%s:%s", host, port);
 });
