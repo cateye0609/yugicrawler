@@ -1,6 +1,6 @@
 import { load } from 'cheerio';
 import request from 'request-promise-native';
-import { CARD_TYPE, MONSTER_PROPERTY, ST_PROPERTY } from '../constants/constant.js';
+import { CARD_TYPE, YUGIPEDIA_MONSTER_PROPERTY, YUGIPEDIA_ST_PROPERTY } from '../constants/constant.js';
 
 export const environment = process.env.NODE_ENV || 'development';
 
@@ -26,16 +26,16 @@ export async function crawlCard(cardName, req) {
 			let propsList = [];
 			switch (type) {
 				case "xyz":
-					propsList = MONSTER_PROPERTY.xyz;
+					propsList = YUGIPEDIA_MONSTER_PROPERTY.xyz;
 					break;
 				case "pendulum":
-					propsList = MONSTER_PROPERTY.pendulum;
+					propsList = YUGIPEDIA_MONSTER_PROPERTY.pendulum;
 					break
 				case "link":
-					propsList = MONSTER_PROPERTY.link;
+					propsList = YUGIPEDIA_MONSTER_PROPERTY.link;
 					break;
 				default:
-					propsList = MONSTER_PROPERTY.monster;
+					propsList = YUGIPEDIA_MONSTER_PROPERTY.monster;
 					break;
 			}
 
@@ -65,7 +65,7 @@ export async function crawlCard(cardName, req) {
 				}
 			});
 		} else {
-			ST_PROPERTY.forEach(prop => {
+			YUGIPEDIA_ST_PROPERTY.forEach(prop => {
 				cardProperty = {
 					...cardProperty,
 					[prop.toLowerCase()]: infoHtml.find(`tr:contains('${prop}') > td`).text().trim()

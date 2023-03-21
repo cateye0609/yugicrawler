@@ -1,14 +1,16 @@
 import express from 'express';
 import multer from 'multer';
-import * as cardController from '../controllers/card.controller.js';
-import * as cardsController from '../controllers/cards.controller.js';
+import { getArtwork } from "../controllers/artwork.controller.js";
+import * as yugipediaController from '../controllers/yugipedia.controller.js';
+import * as yugiwikiController from '../controllers/yugiwiki.controller.js';
 
+const isAltSource = process.env.ALT_SOURCE === "true" || true;
 const upload = multer({ dest: '/tmp/' })
 const router = express.Router();
 router.get('/', (_req, res) => res.send('Yugicrawler API.'));
-router.get('/artwork/:passcode', cardController.getArtwork);
-router.get('/card/:name', cardController.getCardInfo);
-router.get('/set/:name', cardController.getSetInfo);
-router.post('/cards', upload.single("file"), cardsController.getMutipleCards);
+router.get('/artwork/:passcode', getArtwork);
+router.get('/card/:name', isAltSource ? yugiwikiController.getCardInfo : yugipediaController.getCardInfo);
+router.get('/set/:name', yugipediaController.getSetInfo);
+router.post('/cards', upload.single("file"), yugipediaController.getMutipleCards);
 
 export default router;

@@ -1,4 +1,10 @@
-export const MONSTER_PROPERTY = {
+export const CARD_TYPE = {
+	monster: "Monster",
+	spell: "Spell",
+	trap: "Trap"
+};
+/* Yugipedia */
+export const YUGIPEDIA_MONSTER_PROPERTY = {
 	monster: [
 		"Attribute",
 		"Level",
@@ -22,13 +28,36 @@ export const MONSTER_PROPERTY = {
 	]
 };
 
-export const ST_PROPERTY = [
+export const YUGIPEDIA_ST_PROPERTY = [
 	"Property",
 	"Password",
 ];
-
-export const CARD_TYPE = {
-	monster: "Monster",
-	spell: "Spell",
-	trap: "Trap"
+/* Yugioh Wiki */
+export const YUGIWIKI_MONSTER_PROPERTY = {
+	monster: [
+		"Attribute",
+		"Level",
+		"Passcode",
+		"Limitation text",
+	],
+	xyz: [
+		"Attribute",
+		"Rank",
+		"Passcode",
+	],
+	pendulum: [
+		"Attribute",
+		"Level",
+		"Pendulum Scale",
+		"Passcode",
+	],
+	link: [
+		"Attribute",
+		"Passcode",
+	]
 };
+
+export const YUGIWIKI_ST_PROPERTY = [
+	"Property",
+	"Passcode",
+];

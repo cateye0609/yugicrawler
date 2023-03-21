@@ -1,25 +1,12 @@
-import axios from 'axios';
 import { load } from 'cheerio';
+import * as fs from 'fs';
 import request from 'request-promise-native';
-import { CARD_TYPE, MONSTER_PROPERTY, ST_PROPERTY } from '../constants/constant.js';
+import * as ydke from "ydke";
+import { CARD_TYPE, YUGIPEDIA_MONSTER_PROPERTY, YUGIPEDIA_ST_PROPERTY } from '../constants/constant.js';
+import statusMsg from '../constants/message.js';
 import ApiError from '../utils/apiError.js';
 import { environment, getMonsterType } from '../utils/utils.js';
-import statusMsg from '../constants/message.js';
-/* get card artwork by passcode */
-export const getArtwork = async (req, res, next) => {
-    const { passcode } = req.params;
-    try {
-        const url = `https://images.ygoprodeck.com/images/cards_cropped/${passcode}.jpg`;
-        const response = await axios({
-            method: 'GET',
-            url: url,
-            responseType: 'stream',
-        });
-        response.data.pipe(res);
-    } catch (error) {
-        next(new ApiError(error.response.status, error.response.statusText));
-    }
-};
+
 
 /* get card data by name, passcode or set code */
 export const getCardInfo = (req, res, next) => {
@@ -41,21 +28,21 @@ export const getCardInfo = (req, res, next) => {
                 let propsList = [];
                 switch (type) {
                     case "xyz":
-                        propsList = MONSTER_PROPERTY.xyz;
+                        propsList = YUGIPEDIA_MONSTER_PROPERTY.xyz;
                         break;
                     case "pendulum":
-                        propsList = MONSTER_PROPERTY.pendulum;
+                        propsList = YUGIPEDIA_MONSTER_PROPERTY.pendulum;
                         break
                     case "link":
-                        propsList = MONSTER_PROPERTY.link;
+                        propsList = YUGIPEDIA_MONSTER_PROPERTY.link;
                         break;
                     default:
-                        propsList = MONSTER_PROPERTY.monster;
+                        propsList = YUGIPEDIA_MONSTER_PROPERTY.monster;
                         break;
                 }
 
                 if (type !== "pendulum" && monsterTypes.toLowerCase().includes("pendulum")) {
-                    propsList = [...new Set([...propsList, ...MONSTER_PROPERTY.pendulum])];
+                    propsList = [...new Set([...propsList, ...YUGIPEDIA_MONSTER_PROPERTY.pendulum])];
                 }
 
                 if (type === "link") {
@@ -85,7 +72,7 @@ export const getCardInfo = (req, res, next) => {
                     }
                 });
             } else {
-                ST_PROPERTY.forEach(prop => {
+                YUGIPEDIA_ST_PROPERTY.forEach(prop => {
                     cardProperty = {
                         ...cardProperty,
                         [prop.toLowerCase()]: infoHtml.find(`tr:contains('${prop}') > td`).text().trim()
@@ -149,7 +136,7 @@ export const getCardInfo = (req, res, next) => {
             }
         })
         .catch(err => next(new ApiError(err.statusCode, err.response.statusMessage)));
-};
+}
 
 /* get set data by name or id */
 export const getSetInfo = (req, res, next) => {
@@ -217,4 +204,41 @@ export const getSetInfo = (req, res, next) => {
             }
         })
         .catch(err => next(new ApiError(err.statusCode, err.response.statusMessage)));
-};
+}
+
+export const getMutipleCards = async (req, res, next) => {
+    if (req.body.list && req.body.list.length) {
+        const list = [...new Set(req.body.list)];
+        try {
+            const result = await Promise.all(list.map(item => crawlCard(item, req)));
+            res.status(200).json(result.filter(item => !!item));
+        } catch (error) {
+            next(error);
+        }
+    } else if (req.file) {
+        const path = process.cwd() + `/uploads/${req.file.filename}`;
+        const contents = fs.readFileSync(path).toString();
+        let list = [];
+        if (contents.length) {
+            list = [...new Set(contents.split(/\r?\n/).filter(e => Number(e)))];
+            try {
+                const result = await Promise.all(list.map(item => crawlCard(item, req)));
+                res.status(200).json(result.filter(item => !!item));
+                fs.unlink(path, () => { console.log(`Deleted file ${req.file.filename}`); });
+            } catch (error) {
+                next(error);
+            }
+        }
+    } else if (req.body.ydke) {
+        const deck = ydke.parseURL(req.body.ydke);
+        const list = [...new Set([...deck.main, ...deck.extra, ...deck.side])];
+        try {
+            const result = await Promise.all(list.map(item => crawlCard(item, req)));
+            res.status(200).json(result.filter(item => !!item));
+        } catch (error) {
+            next(error);
+        }
+    } else {
+        next(new ApiError(400, statusMsg.wrongFormat));
+    }
+}
