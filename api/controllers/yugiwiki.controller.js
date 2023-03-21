@@ -19,7 +19,9 @@ export const getCardInfo = (req, res, next) => {
             const cardType = dataTableHtml.find(".cardtablerow:contains('Card type') > td").text().trim();
             let cardProperty = { name, cardType };
             if (cardType === CARD_TYPE.monster) {
-                const monsterTypes = dataTableHtml.find(`.cardtablerow:contains('Types') > td`).first().text().trim();
+                const monsterTypes =
+                    dataTableHtml.find(`.cardtablerow:contains('Types') > td`).first().text().trim()
+                    || dataTableHtml.find(`.cardtablerow:contains('Type') > td`).first().text().trim();
                 const isToken = monsterTypes.includes("Token");
                 const type = getMonsterType(monsterTypes);
                 let propsList = [];
@@ -95,17 +97,16 @@ export const getCardInfo = (req, res, next) => {
             const extraDeckTypes = ['fusion', 'synchro', 'xyz', 'link'];
             const isExtraMonster = extraDeckTypes.findIndex(e => types.toLowerCase().includes(e)) > -1;
 
-            const effect = isPendulum
-                ? $('.lore dd').toArray().map(e => $(e).find("br").replaceWith("\n").end().text().trim())
-                : $('.cardtablerow:contains("Card descriptions") table:contains("English") td.navbox-list').find("br").replaceWith("\n").end().text().trim().split("\n");
+            const effect = $('.cardtablerow:contains("Card descriptions") table:contains("English") td.navbox-list').find("br").replaceWith("\n").end().text().trim().split("\n");
             let effectResult = null;
             if (isPendulum) {
-                const monsterEff = effect[1].split("\n");
+                const monsterEffIndex = effect.findIndex(item => item.includes("Monster Effect:"));
+                const monsterEff = effect.slice(monsterEffIndex);
                 effectResult = {
-                    monsterEffect: monsterEff.length > 1
+                    monsterEffect: (monsterEff.length > 1
                         ? (isExtraMonster ? `[${monsterEff[0]}]\n${monsterEff.slice(1).join("\n")}` : monsterEff.join("\n"))
-                        : monsterEff[0],
-                    pendulumEffect: effect[0]
+                        : monsterEff[0]).replace("Monster Effect:", "").trim(),
+                    pendulumEffect: effect[0].replace("Pendulum Effect:", "").trim()
                 }
             } else {
                 effectResult = {
@@ -131,5 +132,5 @@ export const getCardInfo = (req, res, next) => {
                 throw new ApiError(404, statusMsg.notFound);
             }
         })
-        .catch(err => next(new ApiError(err.statusCode, err.response.statusMessage)));
+        .catch(err => next(new ApiError(err.statusCode, err.response?.statusMessage, err.stack)));
 }

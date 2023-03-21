@@ -203,7 +203,7 @@ export const getSetInfo = (req, res, next) => {
                 throw new ApiError(404, statusMsg.notFound);
             }
         })
-        .catch(err => next(new ApiError(err.statusCode, err.response.statusMessage)));
+        .catch(err => next(new ApiError(err.statusCode, err.response?.statusMessage, err.stack)));
 }
 
 export const getMutipleCards = async (req, res, next) => {
