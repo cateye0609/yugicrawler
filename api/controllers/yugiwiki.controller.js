@@ -138,44 +138,29 @@ export const getCardInfo = (req, res, next) => {
 /* get set data by name or id */
 export const getSetInfo = (req, res, next) => {
     const { name } = req.params;
-    const print = req.query.print;
     const url = `https://yugioh.fandom.com/wiki/${(name.length < 6 ? name.toUpperCase() : name).replace(" ", "_")}`;
     request(url)
         .then(html => {
             const $ = load(html);
 
-            const getSetInformationItem = (name) => $(`section.pi-group:contains('Set Information') .pi-item:contains('${name}') > .pi-data-value`).text().trim();
-            const format = getSetInformationItem('Medium');
-            const type = getSetInformationItem('Type');
+            const isJap = !!$("#Top_table tr:first-child:contains('Japanese name')").length;
+            const getSetInformationItem = (section, item) => $(`section.pi-group:contains('${section}') .pi-item:contains('${item}') > .pi-data-value`).text().trim();
+            const format = getSetInformationItem('Set Information', 'Medium');
+            const type = getSetInformationItem('Set Information', 'Type');
             const setName = $("h1#firstHeading > i").text();
             const setCode = $(`section.pi-group:contains('Set Information') .pi-item:contains('Prefix(es)') > .pi-data-value li`).first().text().split("-")[0].trim();
-            const releasedDate = $(".infobox-yugipedia tr:contains('Release dates') + tr > td.infobox-data").text().trim();
+            const releasedDate = getSetInformationItem('Release dates', isJap ? 'Japan' : 'Europe');
             const coverImage = $(".portable-infobox > .pi-image > a ").attr('href');
-            const isJap = $(".set-list:last-child > table.set-list__main > tbody > tr").first().text().includes("Japanese name");
-            let result = [];
-            if (isJap) {
-                const setList = $(".set-list").toArray().map(e => $(e).find("table.set-list__main > tbody > tr").toArray().slice(1).map(e => $(e).children().toArray()));
-                result = setList.reduce((acc, val) => acc.concat(val.map(e => {
-                    return {
-                        code: $(e[0]).text(),
-                        name: $(e[1]).text().slice(1, -1),
-                        category: $(e[4]).text(),
-                        rarity: $(e[3]).find("br").replaceWith(", ").end().text(),
-                        print: $(e[5]).text() || "New",
-                    };
-                })), []);
-            } else {
-                const setList = $(".set-list:last-child > table.set-list__main > tbody > tr").toArray().slice(1).map(e => $(e).children().toArray());
-                result = setList.map(e => {
-                    return {
-                        code: $(e[0]).text(),
-                        name: $(e[1]).text().slice(1, -1),
-                        category: $(e[3]).text(),
-                        rarity: $(e[2]).find("br").replaceWith(", ").end().text(),
-                        print: $(e[4]).text(),
-                    };
-                });
-            }
+            const result = $("#Top_table > tbody tr").toArray().slice(1).map(e => {
+                const setItem = $(e).find("td").toArray();
+                return {
+                    code: $(setItem[0]).text(),
+                    name: $(setItem[1]).text().slice(1, -1),
+                    category: $(setItem[isJap ? 4 : 3]).text(),
+                    rarity: $(setItem[isJap ? 3 : 2]).find("br").replaceWith(", ").end().text(),
+                    print: null,
+                };
+            });
             if (result) {
                 const setInfo = {
                     setName,
@@ -185,17 +170,10 @@ export const getSetInfo = (req, res, next) => {
                     type,
                     releasedDate
                 };
-                if (print) {
-                    res.status(200).json({
-                        ...setInfo,
-                        list: result.filter(e => e.print.toLowerCase() === print.toLowerCase())
-                    });
-                } else {
-                    res.status(200).json({
-                        ...setInfo,
-                        list: result
-                    });
-                }
+                res.status(200).json({
+                    ...setInfo,
+                    list: result
+                });
             } else {
                 throw new ApiError(404, statusMsg.notFound);
             }
