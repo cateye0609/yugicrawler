@@ -12,6 +12,6 @@ export const getArtwork = async (req, res, next) => {
         });
         response.data.pipe(res);
     } catch (error) {
-        next(new ApiError(error.response.status, error.response.statusText));
+        next(new ApiError(error.response.status, error.response.statusText, error.stack));
     }
 }
