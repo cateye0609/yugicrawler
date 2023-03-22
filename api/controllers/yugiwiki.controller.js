@@ -134,3 +134,49 @@ export const getCardInfo = (req, res, next) => {
         })
         .catch(err => next(new ApiError(err.statusCode, err.response?.statusMessage, err.stack)));
 }
+
+/* get set data by name or id */
+export const getSetInfo = (req, res, next) => {
+    const { name } = req.params;
+    const url = `https://yugioh.fandom.com/wiki/${(name.length < 6 ? name.toUpperCase() : name).replace(" ", "_")}`;
+    request(url)
+        .then(html => {
+            const $ = load(html);
+
+            const isJap = !!$("#Top_table tr:first-child:contains('Japanese name')").length;
+            const getSetInformationItem = (section, item) => $(`section.pi-group:contains('${section}') .pi-item:contains('${item}') > .pi-data-value`).text().trim();
+            const format = getSetInformationItem('Set Information', 'Medium');
+            const type = getSetInformationItem('Set Information', 'Type');
+            const setName = $("h1#firstHeading > i").text();
+            const setCode = $(`section.pi-group:contains('Set Information') .pi-item:contains('Prefix(es)') > .pi-data-value li`).first().text().split("-")[0].trim();
+            const releasedDate = getSetInformationItem('Release dates', isJap ? 'Japan' : 'Europe');
+            const coverImage = $(".portable-infobox > .pi-image > a ").attr('href');
+            const result = $("#Top_table > tbody tr").toArray().slice(1).map(e => {
+                const setItem = $(e).find("td").toArray();
+                return {
+                    code: $(setItem[0]).text(),
+                    name: $(setItem[1]).text().slice(1, -1),
+                    category: $(setItem[isJap ? 4 : 3]).text(),
+                    rarity: $(setItem[isJap ? 3 : 2]).find("br").replaceWith(", ").end().text(),
+                    print: null,
+                };
+            });
+            if (result) {
+                const setInfo = {
+                    setName,
+                    setCode,
+                    coverImage,
+                    format,
+                    type,
+                    releasedDate
+                };
+                res.status(200).json({
+                    ...setInfo,
+                    list: result
+                });
+            } else {
+                throw new ApiError(404, statusMsg.notFound);
+            }
+        })
+        .catch(err => next(new ApiError(err.statusCode, err.response?.statusMessage, err.stack)));
+}
