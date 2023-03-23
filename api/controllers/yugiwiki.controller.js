@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { load } from 'cheerio';
 import request from 'request-promise-native';
 import { CARD_TYPE, YUGIWIKI_MONSTER_PROPERTY, YUGIWIKI_ST_PROPERTY } from '../constants/constant.js';
@@ -179,4 +180,23 @@ export const getSetInfo = (req, res, next) => {
             }
         })
         .catch(err => next(new ApiError(err.statusCode, err.response?.statusMessage, err.stack)));
+}
+
+/* search card name */
+export const searchCardName = async (req, res, next) => {
+    const name = req.query.name;
+    try {
+        if (!name) {
+            throw new ApiError(404, statusMsg.notFound);
+        }
+        const url = `https://yugioh.fandom.com/wikia.php?controller=UnifiedSearchSuggestions&method=getSuggestions&query=${name}&format=json&scope=internal`;
+        const response = await axios({
+            method: 'GET',
+            url: url,
+            responseType: 'stream',
+        });
+        response.data.pipe(res);
+    } catch (error) {
+        next(new ApiError(error.response?.status, error.response?.statusText, error.stack));
+    }
 }

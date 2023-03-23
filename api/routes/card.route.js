@@ -9,6 +9,7 @@ const upload = multer({ dest: '/tmp/' })
 const router = express.Router();
 router.get('/', (_req, res) => res.send('Yugicrawler API.'));
 router.get('/artwork/:passcode', getArtwork);
+router.get('/card', yugiwikiController.searchCardName);
 router.get('/card/:name', isAltSource ? yugiwikiController.getCardInfo : yugipediaController.getCardInfo);
 router.get('/set/:name', isAltSource ? yugiwikiController.getSetInfo : yugipediaController.getSetInfo);
 router.post('/cards', upload.single("file"), yugipediaController.getMutipleCards);
