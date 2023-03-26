@@ -82,9 +82,9 @@ export const getCardInfo = (req, res, next) => {
 
             const hasTcgSet = $(".cardtablerow:contains('TCG sets')").length;
             const cardSetHTML = hasTcgSet
-                ? $(".cardtablerow:contains('TCG sets') table.hlist:contains('English') .cardSet > div")
-                : $(".cardtablerow:contains('OCG sets') table.hlist:contains('Japanese') .cardSet > div");
-            const cardSet = cardSetHTML.toArray().slice(1).map(e => {
+                ? $(".cardtablerow:contains('TCG sets') table.hlist:contains('English') .cardSet > hr ~ div")
+                : $(".cardtablerow:contains('OCG sets') table.hlist:contains('Japanese') .cardSet > hr ~ div");
+            const cardSet = cardSetHTML.toArray().map(e => {
                 const setinfo = $(e).find("span").toArray().map(e2 => $(e2).text());
                 return {
                     releasedDate: setinfo[0],
