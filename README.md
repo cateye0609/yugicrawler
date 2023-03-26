@@ -14,13 +14,13 @@
 
 Get card artwork by passcode
 <br/>
-`GET /api/artwork/:passcode`
+`GET /artwork/:passcode`
 
 ## Get card info
 
 Get card data by name, passcode or set code
 <br/>
-`GET /api/card/:passcode`
+`GET /card/:passcode`
 
 **Response**
 ```
@@ -44,14 +44,14 @@ Get card data by name, passcode or set code
          "rarity":"Common"
       }
    ],
-   "artwork":"https://yugicrawler.vercel.app/api/artwork/62256492"
+   "artwork":"https://yugicrawler.vercel.app/artwork/62256492"
 }
 ```
 ## Get set info
 
 Get set data by name or code
 <br/>
-`GET /api/set/:name`
+`GET /set/:name`
 
 **Parameters**
 

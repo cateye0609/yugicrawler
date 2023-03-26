@@ -118,7 +118,7 @@ export async function crawlCard(cardName, req) {
 				}
 			}),
 			password: cardProperty.password === 'None' ? null : cardProperty.password,
-			artwork: cardProperty.password === 'None' ? null : `https://${req.get('host')}/api/artwork/${Number(cardProperty.password)}`,
+			artwork: cardProperty.password === 'None' ? null : `https://${req.get('host')}/artwork/${Number(cardProperty.password)}`,
 			isToken: cardProperty.password === 'None' && !!cardProperty.limitation_text
 		}
 		if (result) {

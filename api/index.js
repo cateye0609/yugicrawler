@@ -16,7 +16,7 @@ app.use(
 /* logger */
 app.use(logger);
 /* route */
-app.use('/api', router);
+app.use(router);
 /* error handler */
 app.use(errorHandler);
 

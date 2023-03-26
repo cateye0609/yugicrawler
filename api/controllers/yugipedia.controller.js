@@ -125,7 +125,7 @@ export const getCardInfo = (req, res, next) => {
                     }
                 }),
                 password: cardProperty.password === 'None' ? null : cardProperty.password,
-                artwork: cardProperty.password === 'None' ? null : `${environment === 'development' ? 'http' : 'https'}://${req.get('host')}/api/artwork/${Number(cardProperty.password)}`,
+                artwork: cardProperty.password === 'None' ? null : `${environment === 'development' ? 'http' : 'https'}://${req.get('host')}/artwork/${Number(cardProperty.password)}`,
                 isToken: (cardProperty.password === 'None' && !!cardProperty.limitation_text) || cardProperty.isToken
             }
 

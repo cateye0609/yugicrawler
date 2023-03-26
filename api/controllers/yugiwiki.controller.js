@@ -123,7 +123,7 @@ export const getCardInfo = (req, res, next) => {
                 pendulumEffect: effectResult.pendulumEffect,
                 cardSet,
                 password: cardProperty.passcode === 'None' ? null : cardProperty.passcode,
-                artwork: cardProperty.passcode === 'None' ? null : `${environment === 'development' ? 'http' : 'https'}://${req.get('host')}/api/artwork/${Number(cardProperty.passcode)}`,
+                artwork: cardProperty.passcode === 'None' ? null : `${environment === 'development' ? 'http' : 'https'}://${req.get('host')}/artwork/${Number(cardProperty.passcode)}`,
                 isToken: (cardProperty.passcode === 'None' && !!cardProperty.limitation_text) || cardProperty.isToken
             }
             delete result.passcode;
