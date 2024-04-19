@@ -94,7 +94,7 @@ export const getCardInfo = (req, res, next) => {
 
             const effect = isPendulum
                 ? $('.lore dd').toArray().map(e => $(e).find("br").replaceWith("\n").end().text().trim())
-                : $(".lore > p").find("br").replaceWith("\n").end().text().trim().split("\n");
+                : $(".lore").find("br").replaceWith("\n").end().text().trim().split("\n");
             let effectResult = null;
             if (isPendulum) {
                 const monsterEff = effect[1].split("\n");
